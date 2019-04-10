@@ -15,7 +15,7 @@ void moveFront();
 void moveBack();
 void moveRight();
 void moveLeft();
-void stop();
+void _stop();
 
 float sensorDireito();
 float sensorEsquerdo();
@@ -26,9 +26,9 @@ int distanciaDireita;
 int distanciaEsquerda;
 int distanciaMeio;
 
-static int MAX_NEAR = 10;
-static int MAX_FAR = 20;
-static int MAX_SIGN = 40;
+static int MAX_NEAR = 40;
+static int MAX_FAR = 60;
+static int MAX_SIGN = 100;
   
 void setup()
 {
@@ -53,28 +53,28 @@ void loop() {
     moveBack(); 
     digitalWrite(LED, HIGH);
     Serial.println("BACK");
+  }else if(distanciaMeio == 0 || (distanciaMeio < MAX_FAR && distanciaMeio > MAX_NEAR) || distanciaMeio > MAX_SIGN){
+    _stop();
+    digitalWrite(LED, LOW);
+    Serial.println("STOP");
   }
-  else if(distanciaMeio > MAX_FAR){
-    moveFront();
-    digitalWrite(LED, HIGH);
-    Serial.println("FRONT");
-  } 
   else if (distanciaDireita > distanciaMeio ) {
     moveRight();
     digitalWrite(LED, HIGH);
     Serial.println("RIGHT");
   }
-  else if(distanciaEsquerda > distanciaMeio ){
+  else if (distanciaEsquerda> distanciaMeio) {
     moveLeft();
     digitalWrite(LED, HIGH);
     Serial.println("LEFT");
   } 
-  else if(distanciaMeio == 0 || (distanciaMeio < MAX_FAR && distanciaMeio > MAX_NEAR) || distanciaMeio > MAX_SIGN){
-    stop();
-    digitalWrite(LED, LOW);
-    Serial.println("STOP");
-  }
-  delay(1000);
+  else if(distanciaMeio > MAX_FAR){
+    moveFront();
+    digitalWrite(LED, HIGH);
+    Serial.println("FRONT");
+  } 
+  
+  delay(25);
 }
 
 float sensorDireita() {
@@ -82,7 +82,6 @@ float sensorDireita() {
   distanciaDireita = sensor1.convert(microsec, Ultrasonic::CM);
   Serial.print("Direita - Distancia em cm: ");
   Serial.println(distanciaDireita);
-  delay(50);
 }
 
 float sensorEsquerda() {
@@ -90,7 +89,6 @@ float sensorEsquerda() {
   distanciaEsquerda = sensor2.convert(microsec, Ultrasonic::CM);
   Serial.print("Esquerda - Distancia em cm: ");
   Serial.println(distanciaEsquerda);
-  delay(50);
 }
 
 float sensorMeio() {
@@ -98,10 +96,9 @@ float sensorMeio() {
   distanciaMeio = sensor3.convert(microsec, Ultrasonic::CM);
   Serial.print("Meio - Distancia em cm: ");
   Serial.println(distanciaMeio);
-  delay(50);
 }
 
-void stop(){
+void _stop(){
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, HIGH);
   digitalWrite(IN3, HIGH);
